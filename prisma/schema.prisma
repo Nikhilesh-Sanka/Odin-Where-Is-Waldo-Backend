@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Game {
+  id Int @id @default(autoincrement())
+  image_url String
+  name String
+  instructions Instruction[]
+  leaderBoard LeaderBoard @relation(fields:[leaderBoardId],references:[id])
+  leaderBoardId Int @unique
+}
+
+model Instruction{
+  id Int @id @default(autoincrement())
+  instruction String
+  image_url String
+  x_coordinate String
+  y_coordinate String
+  game Game @relation(fields:[gameId],references:[id])
+  gameId Int
+}
+
+model LeaderBoard {
+  id Int @id @default(autoincrement())
+  game Game?
+  cells Cell[]
+}
+
+model Cell {
+  id Int @id @default(autoincrement())
+  name String
+  time Float
+  leaderBoard LeaderBoard @relation(fields:[leaderBoardId],references:[id])
+  leaderBoardId Int
+}
+
+model GameInfo {
+  id Int @id @default(autoincrement())
+  gameId Int
+  startTime String
+  hitTargets Int[]
+  endTime String?
+}
+
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt   DateTime
+}
